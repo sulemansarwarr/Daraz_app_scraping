@@ -6,14 +6,16 @@ import time
 import pandas as pd
 from fake_useragent import UserAgent
 import random
-
-# driver = webdriver.Chrome()
 search= input("Enter the product name for search ")
 search_url=f"https://www.daraz.pk/catalog/?spm=a2a0e.tm80335142.search.d_go&q={search}"
 next_page = 2
 
 ua = UserAgent()
-user_agent = ua.random
+# user_agent = ua.random
+try:
+    user_agent = ua.random
+except:
+    user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)..."
 
 # Setup Firefox options with fake user-agent
 firefox_options = Options()
@@ -43,6 +45,9 @@ while search_url:
         time.sleep(random.uniform(4, 6)) 
 
         html = driver.page_source
+        if "captcha" in html.lower():
+            print("Captcha detected, stopping")
+            break
 
         #driver.quit()
 
@@ -68,14 +73,21 @@ while search_url:
                 data=product_name.text
                 print("Product Name : " , data,index)
                 name_of_product.append(data)
-
+            else:
+                data = "None"
+                print(data)
+                product_name.append(data)
 
             product_price= product.find('div', class_="aBrP0")
             if product_price:
                 data=product_price.text
                 print("Product price : " , data)
                 price_of_product.append(data)
-                
+            else:
+                data = "None"
+                print(data)
+                product_price.append(data)
+
             product_best_price= product.find('div', class_="WNoq3")
             if product_best_price:
                 data = "This product is from Daraz MALL"
@@ -102,7 +114,10 @@ while search_url:
                 data=product_location.text
                 print("Product location : " , data)
                 location_of_product.append(data)
-            
+            else:
+                data = "None"
+                print(data)
+                product_location.append(data)
 
             product_rating= product.find('span', class_="qzqFw")
             if product_rating:
